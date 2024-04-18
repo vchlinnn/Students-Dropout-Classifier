@@ -18,7 +18,8 @@ Exploration of the relationships between variables, both numerically and graphic
 You should not focus on building statistical models at this stage.
 
 ```{r}
-student_data <- read.csv('https://archive.ics.uci.edu/static/public/697/data.csv')
+library(readr)
+student_data <- read_csv('https://archive.ics.uci.edu/static/public/697/data.csv')
 ```
 
 # Data wrangling #
@@ -42,7 +43,7 @@ str(student_data)
 We can see that several variables like `Marital status`, `Nacionality`, `Mother's qualification`, `Father's qualification` are coded numerically but likely represent categories. We will convert these into categorical variables for easier analysis and interpretation.
 
 ```{r}
-student_data$`Marital.status` <- as.factor(student_data$`Marital.status`)
+student_data$Marital.status <- as.factor(student_data$Marital.status)
 
 student_data$Displaced <- as.factor(student_data$Displaced)
 
