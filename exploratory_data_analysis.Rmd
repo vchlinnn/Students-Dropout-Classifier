@@ -2,28 +2,60 @@
 title: "exploratory_data_analysis"
 output: pdf_document
 date: "2024-04-18"
+author: "Linh Vu & Duc Nguyen"
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## R Markdown
+Before you build any models, you should perform appropriate exploratory (or descriptive) analysis. This might include:
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+Descriptive statistics for all variables you intend to investigate. For quantitative variables, this includes: mean, standard deviation, 5-number summaries, and histograms and/or boxplots; and for categorical variables, this includes: a list of all factor levels, as well as counts and proportions within each level, and bar charts.
 
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+Exploration of the relationships between variables, both numerically and graphically. Consider not only the relationship between the response and explanatory variables, but also between two (or more) explanatory variables.
 
-```{r cars}
-summary(cars)
+You should not focus on building statistical models at this stage.
+
+```{r}
+student_data <- read.csv('https://archive.ics.uci.edu/static/public/697/data.csv')
 ```
 
-## Including Plots
+# Data wrangling #
 
-You can also embed plots, for example:
+Data wrangling, including joining two or more data sets into a single set, converting quantitative variables to categorical or collapsing categorical variables to ones with fewer levels, renaming variables and/or variable levels, creating new variables from existing ones
 
-```{r pressure, echo=FALSE}
-plot(pressure)
+First, let's check to see if there are any missing values appear in the data. 
+
+```{r}
+missing_values <- sapply(student_data, function(x) sum(is.na(x)))
+missing_values
+```
+We can see that there is no missing value in this data. 
+
+Let's continue looking at the structure of this data: 
+
+```{r}
+str(student_data)
 ```
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+We can see that several variables like `Marital status`, `Nacionality`, `Mother's qualification`, `Father's qualification` are coded numerically but likely represent categories. We will convert these into categorical variables for easier analysis and interpretation.
+
+```{r}
+student_data$`Marital.status` <- as.factor(student_data$`Marital.status`)
+
+student_data$Displaced <- as.factor(student_data$Displaced)
+
+student_data$Daytime.evening.attendance <- as.factor(student_data$Daytime.evening.attendance)
+
+student_data$Educational.special.needs <- as.factor(student_data$Educational.special.needs)
+
+student_data$Tuition.fees.up.to.date <- as.factor(student_data$Tuition.fees.up.to.date)
+
+student_data$Gender <- as.factor(student_data$Gender)
+
+student_data$Scholarship.holder <- as.factor(student_data$Scholarship.holder)
+
+student_data$Scholarship.holder <- as.factor(student_data$Scholarship.holder)
+```
+
