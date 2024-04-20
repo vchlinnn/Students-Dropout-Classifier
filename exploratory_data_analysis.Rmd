@@ -40,23 +40,48 @@ Let's continue looking at the structure of this data:
 str(student_data)
 ```
 
-We can see that several variables like `Marital status`, `Nacionality`, `Mother's qualification`, `Father's qualification` are coded numerically but likely represent categories. We will convert these into categorical variables for easier analysis and interpretation.
+We can see that many variables like `Marital status`, `Displaced`, `Daytime.evening.attendance`, `Educational.special.needs` are coded numerically but likely represent categories. We will convert these into categorical variables for easier analysis and interpretation.
 
 ```{r}
-student_data$Marital.status <- as.factor(student_data$Marital.status)
-
-student_data$Displaced <- as.factor(student_data$Displaced)
-
-student_data$Daytime.evening.attendance <- as.factor(student_data$Daytime.evening.attendance)
-
-student_data$Educational.special.needs <- as.factor(student_data$Educational.special.needs)
-
-student_data$Tuition.fees.up.to.date <- as.factor(student_data$Tuition.fees.up.to.date)
-
-student_data$Gender <- as.factor(student_data$Gender)
-
-student_data$Scholarship.holder <- as.factor(student_data$Scholarship.holder)
-
-student_data$Scholarship.holder <- as.factor(student_data$Scholarship.holder)
+student_data <- mutate(student_data, `Marital Status` = as.factor(`Marital Status`))
+student_data <- mutate(student_data, `Displaced` = as.factor(`Displaced`))
+student_data <- mutate(student_data, `Daytime/evening attendance` = as.factor(`Daytime/evening attendance`))
+student_data <- mutate(student_data, `Educational special needs` = as.factor(`Educational special needs`))
+student_data <- mutate(student_data, `Tuition fees up to date` = as.factor(`Tuition fees up to date`))
+student_data <- mutate(student_data, `Gender` = as.factor(`Gender`))
+student_data <- mutate(student_data, `Scholarship holder` = as.factor(`Scholarship holder`))
+str(student_data)
 ```
+
+After that, we check the name of the variables, to see if there is any name containing special characters or unclear description to avoid potential issues in our analysis. None of the names contain special characters, but the `Course` variable seems unclear, and `Nacionality` is written in a non-Engish language. We decide to rename `Course` to `Course_Enrolled` and `Nacionality` to `Nationality`.
+
+```{r}
+names(student_data)[names(student_data) == "Course"] <- "Course_Enrolled"
+names(student_data)[names(student_data) == "Nacionality"] <- "Nationality"
+```
+
+Next, we notice there are several variable with too many levels which could be simplified such as `Mother's Opccupation` and `Mother's Qualification`. Since these variables might have a strong association with our response variable, we will collapse many levels into some broader levels. 
+
+```{r}
+library(dplyr)
+library(forcats)
+
+# Assuming data is already loaded and the column is read as a factor
+student_data <- mutate(student_data, `Mother's qualification` = as.factor(`Mother's qualification`))
+
+# Collapse the levels into broader categories
+student_data <- student_data %>%
+  mutate(`Mother's qualification` = fct_collapse(`Mother's qualification`,
+    Basic_Education = c("19", "26", "27", "37", "38"),
+    Secondary_Education = c("1", "9", "12", "14", "18", "29", "30"),
+    Higher_Education = c("2", "3", "4", "5", "6", "40", "41", "42", "43", "44"),
+    Professional_Technical = c("22", "39"),
+    Unknown_None = c("34", "35", "36")
+  ))
+```
+```{r}
+str(student_data)
+
+```
+
 
