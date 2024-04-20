@@ -11,7 +11,6 @@ knitr::opts_chunk$set(echo = TRUE)
 
 Before you build any models, you should perform appropriate exploratory (or descriptive) analysis. This might include:
 
-Descriptive statistics for all variables you intend to investigate. For quantitative variables, this includes: mean, standard deviation, 5-number summaries, and histograms and/or boxplots; and for categorical variables, this includes: a list of all factor levels, as well as counts and proportions within each level, and bar charts.
 
 Exploration of the relationships between variables, both numerically and graphically. Consider not only the relationship between the response and explanatory variables, but also between two (or more) explanatory variables.
 
@@ -52,6 +51,7 @@ student_data <- mutate(student_data, `Gender` = as.factor(`Gender`))
 student_data <- mutate(student_data, `Scholarship holder` = as.factor(`Scholarship holder`))
 student_data <- mutate(student_data, `Mother's qualification` = as.factor(`Mother's qualification`))
 student_data <- mutate(student_data, `Father's qualification` = as.factor(`Father's qualification`))
+student_data <- mutate(student_data, `Previous qualification` = as.factor(`Previous qualification`))
 ```
 
 After that, we check the name of the variables, to see if there is any name containing special characters or unclear description to avoid potential issues in our analysis. None of the names contain special characters, but the `Course` variable seems unclear, and `Nacionality` is written in a non-Engish language. We decide to rename `Course` to `Course_Enrolled` and `Nacionality` to `Nationality`.
@@ -59,6 +59,13 @@ After that, we check the name of the variables, to see if there is any name cont
 ```{r}
 names(student_data)[names(student_data) == "Course"] <- "Course_Enrolled"
 names(student_data)[names(student_data) == "Nacionality"] <- "Nationality"
+
+student_data <- mutate(student_data, `Nationality` = as.factor(`Nationality`))
+student_data <- mutate(student_data, `Course_Enrolled` = as.factor(`Course_Enrolled`))
+student_data <- mutate(student_data, `Mother's occupation` = as.factor(`Mother's occupation`))
+student_data <- mutate(student_data, `Father's occupation` = as.factor(`Father's occupation`))
+student_data <- mutate(student_data, `Debtor` = as.factor(`Debtor`))
+student_data <- mutate(student_data, `International` = as.factor(`International`))
 ```
 
 Next, we notice there are several variable with too many levels which could be simplified such as `Mother's Opccupation` and `Mother's Qualification`. Since these variables might have a strong association with our response variable, we will collapse many levels into some broader levels. 
@@ -98,9 +105,264 @@ student_data <- mutate(student_data, `Father's qualification` = fct_collapse(`Fa
 
 levels(student_data$`Father's qualification`)
 ```
+```{r}
+student_data$`Previous qualification` <- factor(student_data$`Previous qualification`, levels = c(1, 2, 3, 4, 5, 6, 9, 10, 12, 14, 15, 19, 38, 39, 40, 42, 43))
+
+# Collapse the factor levels into broader categories using forcats::fct_collapse
+student_data <- mutate(student_data, `Previous qualification` = fct_collapse(`Previous qualification`,
+    Basic_Education = c("19", "38"),
+    Secondary_Education = c("1", "9", "10", "12", "14", "15"),
+    Higher_Education = c("2", "3", "4", "5", "6", "40", "43"),
+    Professional_Technical = c("39", "42")
+))
+
+# Print the new levels to verify the changes
+levels(student_data$`Previous qualification`)
+```
 
 ```{r}
-str(student_data)
+student_data$`Mother's occupation` <- factor(student_data$`Mother's occupation`, levels = c(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 90, 99, 122, 123, 125, 131, 132, 134, 141, 143, 144, 151, 152, 153, 171, 173, 175, 191, 192, 193, 194))
+
+# Collapse the levels into broader categories
+student_data <- mutate(student_data, `Mother's occupation` = fct_collapse(`Mother's occupation`,
+    Student = "0",
+    High_Level_Professionals = c("1", "2", "122", "123", "125"),
+    Intermediate_Professionals = c("3", "131", "132", "134"),
+    Administrative_Staff = c("4", "141", "143", "144"),
+    Service_Workers = c("5", "151", "152", "153", "191"),
+    Skilled_Workers = c("6", "7", "171", "173", "175"),
+    Operators_Assembly_Workers = c("8"),
+    Unskilled_Workers = c("9", "192", "193", "194"),
+    Armed_Forces = "10",
+    Other_Unknown = c("90", "99")
+))
+
+```
+```{r}
+student_data$`Father's occupation` <- factor(student_data$`Father's occupation`, levels = c(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 90, 99, 122, 123, 125, 131, 132, 134, 141, 143, 144, 151, 152, 153, 171, 173, 175, 191, 192, 193, 194))
+
+# Collapse the levels into broader categories
+student_data <- mutate(student_data, `Father's occupation` = fct_collapse(`Father's occupation`,
+    Student = "0",
+    High_Level_Professionals = c("1", "2", "122", "123", "125"),
+    Intermediate_Professionals = c("3", "131", "132", "134"),
+    Administrative_Staff = c("4", "141", "143", "144"),
+    Service_Workers = c("5", "151", "152", "153", "191"),
+    Skilled_Workers = c("6", "7", "171", "173", "175"),
+    Operators_Assembly_Workers = c("8"),
+    Unskilled_Workers = c("9", "192", "193", "194"),
+    Armed_Forces = "10",
+    Other_Unknown = c("90", "99")
+))
+
+```
+
+We also want to correct factor levels for categorical variables with many variables that are rarely used. For example, we will look into the `Marital Status` variable: 
+
+```{r}
+table(student_data$`Marital Status`)
+```
+It appears that other levels apart from 1 (single) and 2 (married) are insignificant, so we can group them into one level called `Other`. 
+
+```{r}
+student_data$`Marital Status` <- factor(student_data$`Marital Status`, levels = c("1", "2", "3", "4", "5", "6"))
+
+student_data$`Marital Status` <- fct_recode(student_data$`Marital Status`,
+                                            "Single" = "1",
+                                            "Married" = "2",
+                                            "Other" = "3",  
+                                            "Other" = "4",  
+                                            "Other" = "5",  
+                                            "Other" = "6")
+```
+
+
+# Descriptive statistics # 
+
+Descriptive statistics for all variables you intend to investigate. For quantitative variables, this includes: mean, standard deviation, 5-number summaries, and histograms and/or boxplots; and for categorical variables, this includes: a list of all factor levels, as well as counts and proportions within each level, and bar charts.
+
+First, let's split the predictors into a a data set of quantitative and a data set of qualitative columns for the ease of analysis and visualization. 
+
+```{r}
+# Create a new dataset containing only quantitative columns
+quant_pred <- student_data[, sapply(student_data, is.numeric)]
+names(quant_pred)
+
+# Create a new dataset containing only qualitative columns
+cat_pred <- student_data[, sapply(student_data, is.factor)]
+```
+
+Now, let's apply the summary statistics to the quantitative predictors. 
+
+```{r}
+summary_stats <- quant_pred %>%
+  summarise_all(~ c(
+    Mean = mean(.),
+    SD = sd(.),
+    Min = min(.),
+    Q1 = quantile(., 0.25),
+    Median = median(.),
+    Q3 = quantile(., 0.75),
+    Max = max(.)
+  ))
+
+summary_stats
+```
+Let's create a friendly table to store these informations. 
+
+```{r}
+library(knitr)
+library(kableExtra)
+
+friendly_table <- kable(summary_stats, format = "html", caption = "Summary Statistics for Quantitative Variables") %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"), 
+                full_width = F, 
+                font_size = 12) %>%
+  column_spec(1, bold = T, color = "black") %>%
+  scroll_box(width = "100%", height = "500px")
+
+friendly_table
+```
+
+Let's also visualize the distribution of each quantitative predictors: 
+
+```{r}
+library(ggplot2)
+
+# Histograms
+
+lapply(student_data %>% select_if(is.numeric), function(x) {
+  ggplot(student_data, aes(x = x)) + geom_histogram(bins = 30) + labs(x = deparse(substitute(x)), title = paste("Histogram of", deparse(substitute(x))))
+})
+```
+
+From these histograms and the five number summaries, we would want to omit the predictors that are highly skewed and have too many outliers. Also, using our intuition, we would keep the predictors that we have strong suspicion about its relationship with students' drop out rate, such as "Age at enrollment". Thus, we would choose the predictors: "Previous qualification (grade)", "Admission grade", "Age at enrollment", "Curricular units 1st sem (enrolled)", "Curricular units 1st sem (evaluations)", "Curricular units 1st sem (approved)",  "Curricular units 1st sem (grade)", "Curricular units 2nd sem (enrolled)", "Curricular units 2nd sem (evaluations)", "Curricular units 2nd sem (approved)", "Curricular units 2nd sem (grade)", "Unemployment rate", "Inflation rate", "GDP".
+
+
+Next, we will compute correlation matrix to observe the collinearity between each pairs of predictors. Although multicollinearity does not pose a problem to some categorize methods, it does help to see which predictors are highly related and can be redundant. 
+
+```{r}
+cor(student_data[c("Previous qualification (grade)", "Admission grade", "Age at enrollment", "Curricular units 1st sem (enrolled)", "Curricular units 1st sem (evaluations)", "Curricular units 1st sem (approved)",  "Curricular units 1st sem (grade)", "Curricular units 2nd sem (enrolled)", "Curricular units 2nd sem (evaluations)", "Curricular units 2nd sem (approved)", "Curricular units 2nd sem (grade)", "Unemployment rate", "Inflation rate", "GDP")])
+```
+
+One thing we notice here is that, the statistics from the first semester is highly correlated with that of the second semester. For example, "Curricular units 1st sem (enrolled)" is highly correlated with "Curricular units 2nd sem (enrolled)". Applying field knowledge, we suspect that these each of those information from the two semesters are connected, and we can merge two semsesters into a whole year. 
+
+```{r}
+student_data <- student_data %>%
+  mutate(
+    `Curricular units all year (enrolled)` = (`Curricular units 1st sem (enrolled)` + `Curricular units 2nd sem (enrolled)`) / 2,
+    `Curricular units all year (evaluations)` = (`Curricular units 1st sem (evaluations)` + `Curricular units 2nd sem (evaluations)`) / 2,
+    `Curricular units all year (approved)` = (`Curricular units 1st sem (approved)` + `Curricular units 2nd sem (approved)`) / 2,
+    `Curricular units all year (grade)` = (`Curricular units 1st sem (grade)` + `Curricular units 2nd sem (grade)`) / 2
+  )
+```
+
+Now, let's look at our new correlation matrix: 
+
+```{r}
+cor(student_data[c("Previous qualification (grade)", "Admission grade", "Age at enrollment", "Curricular units all year (enrolled)", "Curricular units all year (evaluations)", "Curricular units all year (approved)",  "Curricular units all year (grade)", "Unemployment rate", "Inflation rate", "GDP")])
+```
+
+There seems very little correlation between predictors, except for `Curricular units all year (approved)` vs. `Curricular units all year (enrolled)` and `Curricular units all year (approved)` vs. `Curricular units all year (grade)`, and `Curricular units all year (approved)` vs. `Admission grade`. Thus, we will proceed with caution for these pairs.  
+
+To continue selecting potential quantitative predictors, we can look at the visualizations of each quantitative predictors we have right now and our categorical response variable `Target`. 
+
+```{r}
+# Box plot of Curricular units all year (enrolled) against 'Target'
+ggplot(student_data, aes(x = Target, y = `Age at enrollment`, fill = Target)) + 
+  geom_boxplot() +
+  labs(title = "Box Plot of Number of curricular units enrolled by Target", x = "Target", y = "Curricular units all year (evaluations)")
+```
+
+
+```{r}
+# Box plot of Curricular units all year (enrolled) against 'Target'
+ggplot(student_data, aes(x = Target, y = `Curricular units all year (grade)`, fill = Target)) + 
+  geom_boxplot() +
+  labs(title = "Box Plot of Number of curricular units enrolled by Target", x = "Target", y = "Curricular units all year (evaluations)")
+```
+
+```{r}
+# Box plot of Curricular units all year (enrolled) against 'Target'
+ggplot(student_data, aes(x = Target, y = `Curricular units all year (approved)`, fill = Target)) + 
+  geom_boxplot() +
+  labs(title = "Box Plot of Number of curricular units enrolled by Target", x = "Target", y = "Curricular units all year (evaluations)")
+```
+We would omit those predictors that weak association with the response variable `Target`. After then, we select two predictors `Curricular units all year (grade)` and `Curricular units all year (approved)`. Also, we might want to add some predictors that does not strongly correlate to these predictors to add some more information about our response variable such as `Age at enrollment`. 
+
+**Categorical Variables**
+
+Now let's look at the data set of our categorical predictors, which we already created and named cat_pred. First, let's create lists of Factor Levels, Counts, and Proportions for each of these predictors. 
+
+```{r}
+names(cat_pred)
+```
+
+```{r}
+# Function 
+
+get_factor_summary <- function(data, variable) {
+  # Create a table of counts
+  counts <- table(data[[variable]])
+  
+  # Calculate proportions
+  proportions <- prop.table(counts)
+  
+  # Combine into a data frame
+  summary_df <- data.frame(
+    Level = names(counts),
+    Count = as.integer(counts),
+    Proportion = proportions
+  )
+  
+  # Return the summary data frame
+  return(summary_df)
+}
+
+# List to store summaries
+all_summaries <- list()
+
+# Loop through each variable in cat_pred
+for (var in names(cat_pred)) {
+  # Get the summary for the current variable
+  summary_df <- get_factor_summary(cat_pred, var)
+  
+  # Store the summary in the list
+  all_summaries[[var]] <- summary_df
+  
+  # Print the summary
+  cat("\nSummary for Variable:", var, "\n")
+  print(summary_df)
+}
+
+```
+
+We would want to omit or edit variables with too many or too few levels, or those with imbalanced observations among levels. Also, using intuition, we might keep some variables that might have an association with students' drop out rate. Based on that, we will omit Marital Status (Imbalance Observations between singletons and married/other), Previous qualification (Imbalance Observations), Course_Enrolled (too many levels), Nationality and International (Imbalance Observations between Portuguese and foreigners), Mother's occupation and Father's occupation (too many levels, even after collapsing), Educational special needs (Imbalance Observations between those with special needs and the others).  
+
+That leaves us with these predictors:
+
+[1]                        "Daytime/evening attendance"  "Previous qualification"    
+ [5]                "Mother's qualification" - keep    "Father's qualification" - keep           
+ [9]         "Displaced"                    "Debtor" - keep                    
+[13] "Tuition fees up to date" - keep   "Gender"                     "Scholarship holder" - keep         
+
+
+
+```{r}
+ggplot(student_data, aes(x = `Previous qualification`, fill = Target)) +
+  geom_bar(position = "dodge") +
+  labs(x = "Mother's Occupation", y = "Count", title = "Distribution of Mother's Occupation by Target Categories") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))  # Rotate x-axis labels for better readability
+```
+
+
+```{r}
+ggplot(student_data, aes(x = `Gender`, fill = Target)) +
+  geom_bar(position = "dodge") +
+  labs(x = "Mother's Occupation", y = "Count", title = "Distribution of Mother's Occupation by Target Categories") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))  # Rotate x-axis labels for better readability
 ```
 
 
