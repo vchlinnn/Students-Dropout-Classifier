@@ -50,7 +50,8 @@ student_data <- mutate(student_data, `Educational special needs` = as.factor(`Ed
 student_data <- mutate(student_data, `Tuition fees up to date` = as.factor(`Tuition fees up to date`))
 student_data <- mutate(student_data, `Gender` = as.factor(`Gender`))
 student_data <- mutate(student_data, `Scholarship holder` = as.factor(`Scholarship holder`))
-str(student_data)
+student_data <- mutate(student_data, `Mother's qualification` = as.factor(`Mother's qualification`))
+student_data <- mutate(student_data, `Father's qualification` = as.factor(`Father's qualification`))
 ```
 
 After that, we check the name of the variables, to see if there is any name containing special characters or unclear description to avoid potential issues in our analysis. None of the names contain special characters, but the `Course` variable seems unclear, and `Nacionality` is written in a non-Engish language. We decide to rename `Course` to `Course_Enrolled` and `Nacionality` to `Nationality`.
@@ -66,18 +67,40 @@ Next, we notice there are several variable with too many levels which could be s
 library(dplyr)
 library(forcats)
 
-student_data <- student_data %>%
-  mutate(`Mother's qualification` = fct_collapse(`Mother's qualification`,
+student_data$`Mother's qualification` <- factor(student_data$`Mother's qualification`, levels = c(1, 2, 3, 4, 5, 6, 9, 10, 11, 12, 14, 18, 19, 22, 26, 27, 29, 30, 31, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44))
+
+
+# Collapse the levels into broader categories
+student_data <- mutate(student_data, `Mother's qualification` = fct_collapse(`Mother's qualification`,
     Basic_Education = c("19", "26", "27", "37", "38"),
-    Secondary_Education = c("1", "9", "12", "14", "18", "29", "30"),
+    Secondary_Education = c("1", "9", "12", "14", "18", "29", "30", "10", "11"),
     Higher_Education = c("2", "3", "4", "5", "6", "40", "41", "42", "43", "44"),
     Professional_Technical = c("22", "39"),
-    Unknown_None = c("34", "35", "36")
-  ))
+    Unknown_None = c("34", "35", "36", "31", "33")
+))
+
+levels(student_data$`Mother's qualification`)
 ```
+
+
+```{r}
+student_data$`Father's qualification` <- factor(student_data$`Father's qualification`, levels = c(1, 2, 3, 4, 5, 6, 9, 10, 11, 12, 14, 18, 19, 22, 26, 27, 29, 30, 31, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44))
+
+
+# Collapse the levels into broader categories
+student_data <- mutate(student_data, `Father's qualification` = fct_collapse(`Father's qualification`,
+    Basic_Education = c("19", "26", "27", "37", "38"),
+    Secondary_Education = c("1", "9", "12", "14", "18", "29", "30", "10", "11"),
+    Higher_Education = c("2", "3", "4", "5", "6", "40", "41", "42", "43", "44"),
+    Professional_Technical = c("22", "39"),
+    Unknown_None = c("34", "35", "36", "31", "33")
+))
+
+levels(student_data$`Father's qualification`)
+```
+
 ```{r}
 str(student_data)
-
 ```
 
 
