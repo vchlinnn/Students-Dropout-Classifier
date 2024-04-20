@@ -66,10 +66,6 @@ Next, we notice there are several variable with too many levels which could be s
 library(dplyr)
 library(forcats)
 
-# Assuming data is already loaded and the column is read as a factor
-student_data <- mutate(student_data, `Mother's qualification` = as.factor(`Mother's qualification`))
-
-# Collapse the levels into broader categories
 student_data <- student_data %>%
   mutate(`Mother's qualification` = fct_collapse(`Mother's qualification`,
     Basic_Education = c("19", "26", "27", "37", "38"),
