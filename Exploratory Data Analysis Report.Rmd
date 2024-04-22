@@ -45,3 +45,4 @@ We examined the proportions of levels in each of the 16 categorical variables. T
 
 ## Next Steps for Model Building
 We have selected 5 categorical and 3 quantitative predictors, which will be used for our baseline model. Because our response variable has 3 classes, we primarily plan to build tree-based classification models with different complexity levels. In consultation with Prof. Wells, we will learn how to implement logistic regression, random forest, and support vector machine. We may attempt Naive Bayes with great caution of its Naive assumption. We have thought about KNN but realized it only fits pure prediction, as opposed to inference. Lastly, we may use backward selection as a benchmark for our models.
+
