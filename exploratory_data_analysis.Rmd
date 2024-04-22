@@ -42,6 +42,7 @@ str(student_data)
 We can see that many variables like `Marital status`, `Displaced`, `Daytime.evening.attendance`, `Educational.special.needs` are coded numerically but likely represent categories. We will convert these into categorical variables for easier analysis and interpretation.
 
 ```{r}
+library(dplyr)
 student_data <- mutate(student_data, `Marital Status` = as.factor(`Marital Status`))
 student_data <- mutate(student_data, `Displaced` = as.factor(`Displaced`))
 student_data <- mutate(student_data, `Daytime/evening attendance` = as.factor(`Daytime/evening attendance`))
@@ -71,7 +72,6 @@ student_data <- mutate(student_data, `International` = as.factor(`International`
 Next, we notice there are several variable with too many levels which could be simplified such as `Mother's Opccupation` and `Mother's Qualification`. Since these variables might have a strong association with our response variable, we will collapse many levels into some broader levels. 
 
 ```{r}
-library(dplyr)
 library(forcats)
 
 student_data$`Mother's qualification` <- factor(student_data$`Mother's qualification`, levels = c(1, 2, 3, 4, 5, 6, 9, 10, 11, 12, 14, 18, 19, 22, 26, 27, 29, 30, 31, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44))
