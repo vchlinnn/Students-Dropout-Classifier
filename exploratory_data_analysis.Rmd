@@ -365,4 +365,51 @@ ggplot(student_data, aes(x = `Gender`, fill = Target)) +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))  # Rotate x-axis labels for better readability
 ```
 
+## Analysis for Final Report
+
+```{r}
+#Remove semesterly data - DON'T RUN TWICE
+student_data <- student_data[,-c(22,23,24,25,26,27,28,29,30,31,32,33)]
+```
+
+```{r}
+library(rsample)
+set.seed(2024)
+my_split <- initial_split(student_data, prop = 0.8)
+train_student <- training(my_split)
+test_student <- testing(my_split)
+```
+
+```{r}
+na_count <- c()
+for (i in 1:29){
+  na_count[i] <- sum(is.na(student_data[,i]))
+}
+na_count
+```
+
+
+### Random Forest
+
+```{r}
+#Build model
+library(randomForest)
+set.seed(2024)
+#rf_1 <- randomForest(Target ~., train_student, ntree = 50)
+```
+
+```{r}
+#library(yardstick)
+#rf1_results <- data.frame(obs = test_student$Target,
+#                         preds = predict(rf_1, test_student))
+#accuracy(rf1_results, truth = obs, estimate = preds)
+```
+
+
+## Boosted Trees
+
+
+
+
+
 
