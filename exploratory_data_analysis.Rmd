@@ -403,7 +403,7 @@ test_student <- testing(my_split)
 #Build model
 library(randomForest)
 set.seed(2024)
-rf_1 <- randomForest(Target ~., train_student, ntree = 50)
+rf_1 <- randomForest(Target ~., train_student, ntree = 100)
 rf_1
 ```
 
@@ -425,6 +425,16 @@ varImpPlot(rf_1)
 
 ## Boosted Trees
 
+```{r}
+#library(gbm)
+#cv_boosted <- gbm(Target ~., train_student,
+#                  distribution = "bernoulli",
+#                  n.trees = 400,
+#                  interaction.depth = 3,
+#                  shrinkage = .1,
+#                  cv.folds = 5,
+#                  n.cores = 4)
+```
 
 
 
