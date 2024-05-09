@@ -138,12 +138,13 @@ student_data <- mutate(student_data, `Mother's occupation` = fct_collapse(`Mothe
 ))
 
 ```
+
 ```{r}
 student_data$`Father's occupation` <- factor(student_data$`Father's occupation`, levels = c(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 90, 99, 122, 123, 125, 131, 132, 134, 141, 143, 144, 151, 152, 153, 171, 173, 175, 191, 192, 193, 194))
 
 # Collapse the levels into broader categories
 student_data <- mutate(student_data, `Father's occupation` = fct_collapse(`Father's occupation`,
-    Student = "0",
+    Student = c("0"),
     High_Level_Professionals = c("1", "2", "122", "123", "125"),
     Intermediate_Professionals = c("3", "131", "132", "134"),
     Administrative_Staff = c("4", "141", "143", "144"),
@@ -231,9 +232,9 @@ library(ggplot2)
 
 # Histograms
 
-lapply(student_data %>% select_if(is.numeric), function(x) {
-  ggplot(student_data, aes(x = x)) + geom_histogram(bins = 30) + labs(x = deparse(substitute(x)), title = paste("Histogram of", deparse(substitute(x))))
-})
+#lapply(student_data %>% select_if(is.numeric), function(x) {
+#  ggplot(student_data, aes(x = x)) + geom_histogram(bins = 30) + labs(x = deparse(substitute(x)), title = paste("Histogram of", deparse(substitute(x))))
+#})
 ```
 
 From these histograms and the five number summaries, we would want to omit the predictors that are highly skewed and have too many outliers. Also, using our intuition, we would keep the predictors that we have strong suspicion about its relationship with students' drop out rate, such as "Age at enrollment". Thus, we would choose the predictors: "Previous qualification (grade)", "Admission grade", "Age at enrollment", "Curricular units 1st sem (enrolled)", "Curricular units 1st sem (evaluations)", "Curricular units 1st sem (approved)",  "Curricular units 1st sem (grade)", "Curricular units 2nd sem (enrolled)", "Curricular units 2nd sem (evaluations)", "Curricular units 2nd sem (approved)", "Curricular units 2nd sem (grade)", "Unemployment rate", "Inflation rate", "GDP".
@@ -373,19 +374,26 @@ student_data <- student_data[,-c(22,23,24,25,26,27,28,29,30,31,32,33)]
 ```
 
 ```{r}
-library(rsample)
-set.seed(2024)
-my_split <- initial_split(student_data, prop = 0.8)
-train_student <- training(my_split)
-test_student <- testing(my_split)
-```
-
-```{r}
+student_data <- na.omit(student_data)
 na_count <- c()
 for (i in 1:29){
   na_count[i] <- sum(is.na(student_data[,i]))
 }
 na_count
+```
+```{r}
+names(student_data) <- make.names(names(student_data))
+student_data$Target <- factor(student_data$Target)
+```
+
+
+
+```{r}
+library(rsample)
+set.seed(2024)
+my_split <- initial_split(student_data, prop = 0.8)
+train_student <- training(my_split)
+test_student <- testing(my_split)
 ```
 
 
@@ -395,14 +403,23 @@ na_count
 #Build model
 library(randomForest)
 set.seed(2024)
-#rf_1 <- randomForest(Target ~., train_student, ntree = 50)
+rf_1 <- randomForest(Target ~., train_student, ntree = 50)
+rf_1
 ```
 
 ```{r}
-#library(yardstick)
-#rf1_results <- data.frame(obs = test_student$Target,
-#                         preds = predict(rf_1, test_student))
-#accuracy(rf1_results, truth = obs, estimate = preds)
+library(yardstick)
+rf1_results <- data.frame(obs = test_student$Target,
+                         preds = predict(rf_1, test_student))
+accuracy(rf1_results, truth = obs, estimate = preds)
+```
+
+```{r}
+importance(rf_1)
+```
+
+```{r}
+varImpPlot(rf_1)
 ```
 
 
