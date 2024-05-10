@@ -9,6 +9,10 @@ date: "2024-05-10"
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
+**First note**: Below is all the code chunk for data wrangling so that we can run and present the plots later. However, the UCI machine learning website is down, so we cannot load our data. Commenting out all the code lines would be very tedious, so we decided to delete the '}' at the beginning of the code chunk, the downside of which is that our current version of the pdf is very messy. Thank you for your understanding.
+
+**********************************************
+
 ```{r, include=FALSE
 library(readr)
 student_data <- read_csv('https://archive.ics.uci.edu/static/public/697/data.csv')
