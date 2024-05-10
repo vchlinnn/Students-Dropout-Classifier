@@ -9,11 +9,8 @@ date: "2024-05-10"
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-**First note**: Below is all the code chunk for data wrangling so that we can run and present the plots later. However, the UCI machine learning website is down, so we cannot load our data. Commenting out all the code lines would be very tedious, so we decided to delete the '}' at the beginning of the code chunk, the downside of which is that our current version of the pdf is very messy. Thank you for your understanding.
 
-**********************************************
-
-```{r, include=FALSE
+```{r, include=FALSE}
 library(readr)
 student_data <- read_csv('https://archive.ics.uci.edu/static/public/697/data.csv')
 
@@ -135,9 +132,10 @@ student_data <- student_data %>%
 ## Remove semesterly data - Don't run twice
 student_data <- student_data[,-c(22,23,24,25,26,27,28,29,30,31,32,33)]
 
+student_data <- na.omit(student_data)
+
 names(student_data) <- make.names(names(student_data))
 student_data$Target <- factor(student_data$Target)
-
 ```
 
 
@@ -153,6 +151,32 @@ ipsum loren
 
 ipsum loren
 
-# Including Plots
+# Results
 
-ipsum loren
+```{r, include=FALSE}
+library(rsample)
+set.seed(2024)
+my_split <- initial_split(student_data, prop = 0.8)
+train_student <- training(my_split)
+test_student <- testing(my_split)
+```
+
+
+```{r, include=FALSE}
+## Random Forest 
+library(randomForest)
+set.seed(2024)
+rf_1 <- randomForest(Target ~., train_student, ntree = 100)
+
+## Importance Plot
+imp_rf <- as.data.frame(importance(rf_1))
+imp_rf$names <- rownames(imp_rf)
+rownames(imp_rf) <- NULL
+```
+
+```{r, echo=FALSE}
+library(ggplot2)
+ggplot(imp_rf, aes(y = reorder(names,MeanDecreaseGini), x = MeanDecreaseGini)) + geom_col() + theme_bw()
+```
+
+
