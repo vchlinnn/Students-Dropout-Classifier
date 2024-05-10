@@ -1,5 +1,5 @@
 ---
-title: "Technical Report"
+title: "Technical Report: Analyzing Factors Influencing Student Academic Success and Dropout Rates in Higher Education"
 author: "Duc Nguyen and Linh Vu"
 output: pdf_document
 date: "2024-05-10"
@@ -141,15 +141,31 @@ student_data$Target <- factor(student_data$Target)
 
 # Introduction
 
-ipsum loren
+The transition from secondary to higher education often poses significant challenges for students, leading to academic difficulties and dropout. This phenomenon critically affects students' future prospects, institutions' reputations, and their financial stability. The research investigates the factors influencing student outcomes in higher education, utilizing statistical learning methods to predict outcomes based on various demographic, socio-economic, and academic variables collected at enrollment.
+
+Previous studies have explored the general impacts of socio-economic status and previous academic performance on higher education outcomes. However, this investigation expands the scope by incorporating a comprehensive set of variables, including parental education levels and occupations, student's admission grades, and performance in the initial semesters of college. The primary research question addressed is: What factors are most predictive of student graduate outcomes in higher education?
 
 # Methods
 
-ipsum loren
+## Data Set Description
+
+The data for this study was sourced from the UC Irvine Machine Learning Repository, containing records from the Polytechnic Institute of Portalegre, Portugal. The dataset spans from 2008-09 to 2018-19, including 4424 student records across various undergraduate degrees. The data features 36 predictors and a categorical response variable indicating student outcomes: `dropout`, `enrolled`, and `graduate`.
+
+## Data Acquisition and Processing
+
+The data was initially downloaded using UCI's URL and loaded into R for processing. Initial data wrangling involved checking for missing values (none found) and recoding categorical variables from numerical to factor types. Further modifications included simplifying the levels of complex categorical variables like parental qualifications and occupations into more general categories for analytical feasibility and model efficiency.
+
 
 # Exploratory Data Analysis
 
-ipsum loren
+## Summary Statistics and Data Visualizations
+
+Key variables were selected based on their potential influence on student outcomes, focusing on factors like parental background, previous academic achievements, and early college performance. Data visualizations included histograms to explore distributions and boxplots to examine relationships between predictors and student outcomes. A correlation analysis was performed to check for multicollinearity, leading to the combination of some variables to reduce redundancy and enhance model interpretability.
+
+## Statistical Methods and Model Diagnostics
+
+The exploratory analysis utilized forward selection to identify significant predictors. This phase included testing potential variables against the response variable using both visual and statistical methods to ensure only the most relevant predictors were retained. Selected variables were then used to construct a baseline model, planning to employ tree-based classification methods for their robustness in handling non-linear relationships and interactions among predictors.
+
 
 # Results
 
