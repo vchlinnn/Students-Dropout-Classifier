@@ -215,14 +215,14 @@ Let's create a friendly table to store these informations.
 library(knitr)
 library(kableExtra)
 
-friendly_table <- kable(summary_stats, format = "html", caption = "Summary Statistics for Quantitative Variables") %>%
-  kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"), 
-                full_width = F, 
-                font_size = 12) %>%
-  column_spec(1, bold = T, color = "black") %>%
-  scroll_box(width = "100%", height = "500px")
+#friendly_table <- kable(summary_stats, format = "html", caption = "Summary Statistics for Quantitative Variables") %>%
+#  kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"), 
+#                full_width = F, 
+#                font_size = 12) %>%
+#  column_spec(1, bold = T, color = "black") %>%
+#  scroll_box(width = "100%", height = "500px")
 
-friendly_table
+#friendly_table
 ```
 
 Let's also visualize the distribution of each quantitative predictors: 
@@ -415,7 +415,11 @@ accuracy(rf1_results, truth = obs, estimate = preds)
 ```
 
 ```{r}
-importance(rf_1)
+imp_rf <- as.data.frame(importance(rf_1))
+imp_rf$names <- rownames(imp_rf)
+rownames(imp_rf) <- NULL
+
+ggplot(imp_rf, aes(y = reorder(names,MeanDecreaseGini), x = MeanDecreaseGini)) + geom_col() + theme_bw()
 ```
 
 ```{r}
@@ -425,15 +429,15 @@ varImpPlot(rf_1)
 
 ## Boosted Trees
 
-```{r}
-#library(gbm)
-#cv_boosted <- gbm(Target ~., train_student,
-#                  distribution = "bernoulli",
-#                  n.trees = 400,
-#                  interaction.depth = 3,
-#                  shrinkage = .1,
-#                  cv.folds = 5,
-#                  n.cores = 4)
+```{r
+library(gbm)
+cv_boosted <- gbm(Target ~., train_student,
+                  distribution = "multinomial",
+                  n.trees = 100,
+                  interaction.depth = 3,
+                  shrinkage = .1,
+                  cv.folds = 5,
+                  n.cores = 4)
 ```
 
 
