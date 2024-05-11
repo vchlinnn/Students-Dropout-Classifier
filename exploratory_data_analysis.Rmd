@@ -403,7 +403,7 @@ test = testing(my_split)
 #Build model
 library(randomForest)
 set.seed(2000)
-rf_1 <- randomForest(Target ~., train, ntree = 100)
+rf_1 <- randomForest(Target ~., train, ntree = 250, mtry = 4)
 rf_1
 ```
 
@@ -422,15 +422,22 @@ rownames(imp_rf) <- NULL
 ggplot(imp_rf, aes(y = reorder(names,MeanDecreaseGini), x = MeanDecreaseGini)) + geom_col() + theme_bw()
 ```
 
+## Boosted Trees
+
 ```{r}
-varImpPlot(rf_1)
+dim(student_data)
 ```
 
 
-## Boosted Trees
+```{r}
+str(student_data)
+```
 
+Currently we have 29 variables. `XGBoost` only accepts numerical variables, while most of our predictors are categorical. We will pick the 11 consistenly best variables:
 
-
-
+```{r}
+best11var <- arrange(imp_rf, desc(MeanDecreaseGini))[1:11,2]
+best11var
+```
 
 
