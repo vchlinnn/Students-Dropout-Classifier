@@ -147,22 +147,24 @@ Previous studies have explored the general impacts of socio-economic status and 
 
 # Methods
 
-## Data Set Description
+**Data Set Description**
 
-The data for this study was sourced from the UC Irvine Machine Learning Repository, containing records from the Polytechnic Institute of Portalegre, Portugal. The dataset spans from 2008-09 to 2018-19, including 4424 student records across various undergraduate degrees. The data features 36 predictors and a categorical response variable indicating student outcomes: `dropout`, `enrolled`, and `graduate`.
+The data set of this study was sourced from the UC Irvine Machine Learning Repository, containing records from the Polytechnic Institute of Portalegre, Portugal. The dataset spans the school years 2008-09 and 2018-19, consisting of 4424 student records across various undergraduate degrees. The data features 36 predictors and a categorical response variable indicating student outcomes: `dropout`, `enrolled`, and `graduate`.
 
-## Data Acquisition and Processing
 
-The data was initially downloaded using UCI's URL and loaded into R for processing. Initial data wrangling involved checking for missing values (none found) and recoding categorical variables from numerical to factor types. Further modifications included simplifying the levels of complex categorical variables like parental qualifications and occupations into more general categories for analytical feasibility and model efficiency.
+**Data Acquisition and Processing**
+
+The data was loaded into R using UCI's URL. Initial data wrangling involved checking for missing values (none found) and recoding categorical variables from numerical to factor types. Further modifications included collapsing the levels of complex categorical variables like parental qualifications and occupations into more general categories for analytical feasibility and model efficiency.
 
 
 # Exploratory Data Analysis
 
-## Summary Statistics and Data Visualizations
+**Summary Statistics and Data Visualizations**
 
-Key variables were selected based on their potential influence on student outcomes, focusing on factors like parental background, previous academic achievements, and early college performance. Data visualizations included histograms to explore distributions and boxplots to examine relationships between predictors and student outcomes. A correlation analysis was performed to check for multicollinearity, leading to the combination of some variables to reduce redundancy and enhance model interpretability.
+Key variables were selected based on their potential influence on student outcomes, focusing on factors like parental background, previous academic achievements, and early college performance. Data visualizations included histograms to explore distributions and boxplots to examine relationships between predictors and student outcomes. A correlation analysis was performed to check for multicollinearity, ultimately leading to the combination of variables on early college performance, from semesterly into yearly, in order to reduce redundancy and enhance model interpretability.
 
-## Statistical Methods and Model Diagnostics
+
+**Statistical Methods and Model Diagnostics**
 
 The exploratory analysis utilized forward selection to identify significant predictors. This phase included testing potential variables against the response variable using both visual and statistical methods to ensure only the most relevant predictors were retained. Selected variables were then used to construct a baseline model, planning to employ tree-based classification methods for their robustness in handling non-linear relationships and interactions among predictors.
 
@@ -194,7 +196,7 @@ rownames(imp_rf) <- NULL
 
 ```{r, echo=FALSE}
 library(ggplot2)
-ggplot(imp_rf, aes(y = reorder(names,MeanDecreaseGini), x = MeanDecreaseGini)) + geom_col() + theme_bw()
+ggplot(imp_rf, aes(y = reorder(names,MeanDecreaseGini), x = MeanDecreaseGini)) + geom_col() + theme_bw() + labs(x="Mean decrease in Gini coefficient", y="Variables") + ggtitle("Importance Plot from Random Forest")
 ```
 
 As can be seen, the variables relating to current academic standing and course enrolled in college are the most significant in assessing a student's chance of dropping out.
