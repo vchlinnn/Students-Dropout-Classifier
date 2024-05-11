@@ -392,8 +392,8 @@ student_data$Target <- factor(student_data$Target)
 library(rsample)
 set.seed(2024)
 my_split <- initial_split(student_data, prop = 0.8)
-train_student <- training(my_split)
-test_student <- testing(my_split)
+train = training(my_split)
+test = testing(my_split)
 ```
 
 
@@ -402,15 +402,15 @@ test_student <- testing(my_split)
 ```{r}
 #Build model
 library(randomForest)
-set.seed(2024)
-rf_1 <- randomForest(Target ~., train_student, ntree = 100)
+set.seed(2000)
+rf_1 <- randomForest(Target ~., train, ntree = 100)
 rf_1
 ```
 
 ```{r}
 library(yardstick)
-rf1_results <- data.frame(obs = test_student$Target,
-                         preds = predict(rf_1, test_student))
+rf1_results <- data.frame(obs = test$Target,
+                         preds = predict(rf_1, test))
 accuracy(rf1_results, truth = obs, estimate = preds)
 ```
 
@@ -429,16 +429,6 @@ varImpPlot(rf_1)
 
 ## Boosted Trees
 
-```{r
-library(gbm)
-cv_boosted <- gbm(Target ~., train_student,
-                  distribution = "multinomial",
-                  n.trees = 100,
-                  interaction.depth = 3,
-                  shrinkage = .1,
-                  cv.folds = 5,
-                  n.cores = 4)
-```
 
 
 

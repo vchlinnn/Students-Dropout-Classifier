@@ -1378,8 +1378,8 @@ holder'' - keep
 \FunctionTok{library}\NormalTok{(rsample)}
 \FunctionTok{set.seed}\NormalTok{(}\DecValTok{2024}\NormalTok{)}
 \NormalTok{my\_split }\OtherTok{\textless{}{-}} \FunctionTok{initial\_split}\NormalTok{(student\_data, }\AttributeTok{prop =} \FloatTok{0.8}\NormalTok{)}
-\NormalTok{train\_student }\OtherTok{\textless{}{-}} \FunctionTok{training}\NormalTok{(my\_split)}
-\NormalTok{test\_student }\OtherTok{\textless{}{-}} \FunctionTok{testing}\NormalTok{(my\_split)}
+\NormalTok{train }\OtherTok{=} \FunctionTok{training}\NormalTok{(my\_split)}
+\NormalTok{test }\OtherTok{=} \FunctionTok{testing}\NormalTok{(my\_split)}
 \end{Highlighting}
 \end{Shaded}
 
@@ -1420,8 +1420,8 @@ holder'' - keep
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\FunctionTok{set.seed}\NormalTok{(}\DecValTok{2024}\NormalTok{)}
-\NormalTok{rf\_1 }\OtherTok{\textless{}{-}} \FunctionTok{randomForest}\NormalTok{(Target }\SpecialCharTok{\textasciitilde{}}\NormalTok{., train\_student, }\AttributeTok{ntree =} \DecValTok{100}\NormalTok{)}
+\FunctionTok{set.seed}\NormalTok{(}\DecValTok{2000}\NormalTok{)}
+\NormalTok{rf\_1 }\OtherTok{\textless{}{-}} \FunctionTok{randomForest}\NormalTok{(Target }\SpecialCharTok{\textasciitilde{}}\NormalTok{., train, }\AttributeTok{ntree =} \DecValTok{100}\NormalTok{)}
 \NormalTok{rf\_1}
 \end{Highlighting}
 \end{Shaded}
@@ -1429,17 +1429,17 @@ holder'' - keep
 \begin{verbatim}
 ## 
 ## Call:
-##  randomForest(formula = Target ~ ., data = train_student, ntree = 100) 
+##  randomForest(formula = Target ~ ., data = train, ntree = 100) 
 ##                Type of random forest: classification
 ##                      Number of trees: 100
 ## No. of variables tried at each split: 5
 ## 
-##         OOB estimate of  error rate: 22.6%
+##         OOB estimate of  error rate: 23.71%
 ## Confusion matrix:
 ##          Dropout Enrolled Graduate class.error
-## Dropout      862       88      175  0.23377778
-## Enrolled     157      208      255  0.66451613
-## Graduate      60       58     1646  0.06689342
+## Dropout      852       91      182   0.2426667
+## Enrolled     156      198      266   0.6806452
+## Graduate      80       57     1627   0.0776644
 \end{verbatim}
 
 \begin{Shaded}
@@ -1461,8 +1461,8 @@ holder'' - keep
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\NormalTok{rf1\_results }\OtherTok{\textless{}{-}} \FunctionTok{data.frame}\NormalTok{(}\AttributeTok{obs =}\NormalTok{ test\_student}\SpecialCharTok{$}\NormalTok{Target,}
-                         \AttributeTok{preds =} \FunctionTok{predict}\NormalTok{(rf\_1, test\_student))}
+\NormalTok{rf1\_results }\OtherTok{\textless{}{-}} \FunctionTok{data.frame}\NormalTok{(}\AttributeTok{obs =}\NormalTok{ test}\SpecialCharTok{$}\NormalTok{Target,}
+                         \AttributeTok{preds =} \FunctionTok{predict}\NormalTok{(rf\_1, test))}
 \FunctionTok{accuracy}\NormalTok{(rf1\_results, }\AttributeTok{truth =}\NormalTok{ obs, }\AttributeTok{estimate =}\NormalTok{ preds)}
 \end{Highlighting}
 \end{Shaded}
@@ -1471,7 +1471,7 @@ holder'' - keep
 ## # A tibble: 1 x 3
 ##   .metric  .estimator .estimate
 ##   <chr>    <chr>          <dbl>
-## 1 accuracy multiclass     0.764
+## 1 accuracy multiclass     0.756
 \end{verbatim}
 
 \begin{Shaded}
@@ -1496,7 +1496,5 @@ holder'' - keep
 
 \hypertarget{boosted-trees}{%
 \subsection{Boosted Trees}\label{boosted-trees}}
-
-\texttt{\{r\ library(gbm)\ cv\_boosted\ \textless{}-\ gbm(Target\ \textasciitilde{}.,\ train\_student,\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ distribution\ =\ "multinomial",\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ n.trees\ =\ 100,\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ interaction.depth\ =\ 3,\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ shrinkage\ =\ .1,\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ cv.folds\ =\ 5,\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ n.cores\ =\ 4)}
 
 \end{document}
