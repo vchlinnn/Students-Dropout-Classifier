@@ -403,7 +403,7 @@ test = testing(my_split)
 #Build model
 library(randomForest)
 set.seed(2000)
-rf_1 <- randomForest(Target ~., train, ntree = 250, mtry = 4)
+rf_1 <- randomForest(Target ~., train, ntree = 250, mtry = 6)
 rf_1
 ```
 
@@ -433,11 +433,41 @@ dim(student_data)
 str(student_data)
 ```
 
-Currently we have 29 variables. `XGBoost` only accepts numerical variables, while most of our predictors are categorical. We will pick the 11 consistenly best variables:
+Currently we have 29 variables. `XGBoost` only accepts numerical variables, while most of our predictors are categorical. We will deselect the variables with too many factors and/or minimal importance.
+
 
 ```{r}
-best11var <- arrange(imp_rf, desc(MeanDecreaseGini))[1:11,2]
-best11var
+boosted_student_data <- student_data[, -c(1,2,5,6,8,9,10,14,15,21)]
+str(boosted_student_data)
 ```
 
+```{r}
+boosted_student_data$Debtor <- as.numeric(as.character(boosted_student_data$Debtor))
+boosted_student_data$Tuition.fees.up.to.date <- as.numeric(as.character(boosted_student_data$Tuition.fees.up.to.date))
+boosted_student_data$Gender <- as.numeric(as.character(boosted_student_data$Gender))
+boosted_student_data$Scholarship.holder <- as.numeric(as.character(boosted_student_data$Scholarship.holder))
+```
+
+```{r}
+str(boosted_student_data)
+```
+
+```{r}
+library(Matrix)
+sparse_matrix <- sparse.model.matrix(Target ~., data = boosted_student_data)[,-1]
+colnames(sparse_matrix)
+```
+
+
+```{r}
+require(xgboost)
+```
+
+```{r}
+#library(caret)
+#set.seed(2024)
+#boostedIndex <- createDataPartition(sparse_matrix$Target, p=.8, list = FALSE, times = 1)
+#boosted_train <- sparse_matrix[boostedIndex,]
+#boosted_test <- sparse_matrix[-boostedIndex,]
+```
 
