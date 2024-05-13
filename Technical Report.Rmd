@@ -1,5 +1,5 @@
 ---
-title: "Technical Report: Analyzing Factors Influencing Student Academic Success and Dropout Rates in Higher Education"
+title: "Technical Report: Analyzing Factors Influencing Student Academic Success and Dropouts in Higher Education"
 author: "Duc Nguyen and Linh Vu"
 output: pdf_document
 date: "2024-05-10"
@@ -141,20 +141,21 @@ student_data$Target <- factor(student_data$Target)
 
 # Introduction
 
-The transition from secondary to higher education often poses significant challenges for students, leading to academic difficulties and dropout. This phenomenon critically affects students' future prospects, institutions' reputations, and their financial stability. The research investigates the factors influencing student outcomes in higher education, utilizing statistical learning methods to predict outcomes based on various demographic, socio-economic, and academic variables collected at enrollment.
+The transition from secondary to higher education often poses significant challenges for students, leading to academic difficulties and dropout. This phenomenon critically affects students' future prospects and institutions' reputations and financial stability. Our research investigates the factors influencing student outcomes in higher education, utilizing statistical learning methods to predict student outcomes based on variables such as demographic, socio-economic, and academic information. Specifically, we asked: “What factors are the most predictive of student graduate outcomes in higher education?”
 
-Previous studies have explored the general impacts of socio-economic status and previous academic performance on higher education outcomes. However, this investigation expands the scope by incorporating a comprehensive set of variables, including parental education levels and occupations, student's admission grades, and performance in the initial semesters of college. The primary research question addressed is: What factors are most predictive of student graduate outcomes in higher education?
+Previous studies primarily focus on predicting academic success using statistical methods. Beaulac and Roosenthal use random forests to predict whether students will complete their program based solely on course grades in college, with 78.84% accuracy. In addition, Martins et al., whose dataset we will use, achieved a higher accuracy rate for boosting algorithms than random forests, but were yet to incorporate student performance in their first semesters. Our research will take a step further by adding in early college performance predictors and significantly more observations into our analysis.
+
 
 # Methods
 
-**Data Set Description**
+**Dataset Description**
 
 The data set of this study was sourced from the UC Irvine Machine Learning Repository, containing records from the Polytechnic Institute of Portalegre, Portugal. The dataset spans the school years 2008-09 and 2018-19, consisting of 4424 student records across various undergraduate degrees. The data features 36 predictors and a categorical response variable indicating student outcomes: `dropout`, `enrolled`, and `graduate`.
 
 
-**Data Acquisition and Processing**
+**Data Processing**
 
-The data was loaded into R using UCI's URL. Initial data wrangling involved checking for missing values (none found) and recoding categorical variables from numerical to factor types. Further modifications included collapsing the levels of complex categorical variables like parental qualifications and occupations into more general categories for analytical feasibility and model efficiency.
+The data was loaded into RStudio using UCI's URL. Initial data wrangling involved checking for missing values (none found) and recoding categorical variables from numerical to factor types. Further modifications included collapsing the levels of complex categorical variables like parental qualifications and occupations into more general categories for analytical and modeling purposes.
 
 
 # Exploratory Data Analysis
