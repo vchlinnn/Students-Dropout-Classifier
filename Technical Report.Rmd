@@ -152,7 +152,7 @@ Previous studies primarily focus on predicting academic success using statistica
 
 **Dataset Description**
 
-The data set of this study was sourced from the UC Irvine Machine Learning Repository, containing records from the Polytechnic Institute of Portalegre, Portugal. The dataset spans the school years 2008-09 and 2018-19, consisting of 4424 student records across various undergraduate degrees. The data features 36 predictors and a categorical response variable indicating student outcomes: `dropout`, `enrolled`, and `graduate`.
+The dataset of this study was sourced from the UC Irvine Machine Learning Repository, containing records from the Polytechnic Institute of Portalegre, Portugal. The dataset spans the school years 2008-09 and 2018-19, consisting of 4424 student records across various undergraduate degrees. The data features 36 predictors and a categorical response variable indicating student outcomes: `dropout`, `enrolled`, and `graduate`.
 
 
 **Data Processing**
@@ -197,7 +197,7 @@ imp_rf$names <- rownames(imp_rf)
 rownames(imp_rf) <- NULL
 ```
 
-```{r, echo=FALSE}
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
 library(ggplot2)
 ggplot(imp_rf, aes(y = reorder(names,MeanDecreaseGini), x = MeanDecreaseGini)) + geom_col() + theme_bw() + labs(x="Mean decrease in Gini coefficient", y="Variables") + ggtitle("Importance Plot from Random Forest")
 ```
