@@ -391,7 +391,7 @@ student_data$Target <- factor(student_data$Target)
 ```{r}
 library(rsample)
 set.seed(2024)
-my_split <- initial_split(student_data, prop = 0.8)
+my_split <- initial_split(student_data, prop = 0.8, strata = Target)
 train = training(my_split)
 test = testing(my_split)
 ```
@@ -400,14 +400,15 @@ test = testing(my_split)
 ### Random Forest
 
 ```{r}
-#Build model
+## Build model
 library(randomForest)
 set.seed(2000)
-rf_1 <- randomForest(Target ~., train, ntree = 250, mtry = 6)
+rf_1 <- randomForest(Target ~., train, ntree = 250, mtry = 5)
 rf_1
 ```
 
 ```{r}
+## Accuracy
 library(yardstick)
 rf1_results <- data.frame(obs = test$Target,
                          preds = predict(rf_1, test))
@@ -437,37 +438,87 @@ Currently we have 29 variables. `XGBoost` only accepts numerical variables, whil
 
 
 ```{r}
-boosted_student_data <- student_data[, -c(1,2,5,6,8,9,10,14,15,21)]
-str(boosted_student_data)
+#boosted_student_data <- student_data[, -c(1,2,5,6,8,9,10,14,15,21)]
+#str(boosted_student_data)
 ```
 
 ```{r}
-boosted_student_data$Debtor <- as.numeric(as.character(boosted_student_data$Debtor))
-boosted_student_data$Tuition.fees.up.to.date <- as.numeric(as.character(boosted_student_data$Tuition.fees.up.to.date))
-boosted_student_data$Gender <- as.numeric(as.character(boosted_student_data$Gender))
-boosted_student_data$Scholarship.holder <- as.numeric(as.character(boosted_student_data$Scholarship.holder))
+#boosted_student_data$Debtor <- as.numeric(as.character(boosted_student_data$Debtor))
+#boosted_student_data$Tuition.fees.up.to.date <- as.numeric(as.character(boosted_student_data$Tuition.fees.up.to.date))
+#boosted_student_data$Gender <- as.numeric(as.character(boosted_student_data$Gender))
+#boosted_student_data$Scholarship.holder <- as.numeric(as.character(boosted_student_data$Scholarship.holder))
 ```
 
 ```{r}
-str(boosted_student_data)
+#str(boosted_student_data)
 ```
 
 ```{r}
-library(Matrix)
-sparse_matrix <- sparse.model.matrix(Target ~., data = boosted_student_data)[,-1]
-colnames(sparse_matrix)
+#library(Matrix)
+#sparse_matrix <- sparse.model.matrix(Target ~., data = boosted_student_data)[,-1]
+#colnames(sparse_matrix)
+```
+
+
+### Attempt with tidymodels
+
+```{r}
+library(tidymodels)
+
+## Recipe
+student_rec <- recipe(Target ~., data = train) %>% 
+  step_novel(all_nominal()) %>% 
+  step_dummy(all_nominal(), - all_outcomes())
+
+## Model
+boosted_mod <- boost_tree(
+  trees = tune(),
+  tree_depth = tune(), 
+  min_n = tune(),
+  learn_rate = tune()
+) %>% 
+  set_engine("xgboost") %>% 
+  set_mode("classification")
+
+## Build workflow  
+xgb_wf <- workflow() %>% 
+  add_model(boosted_mod) %>% 
+  add_recipe(student_rec)
+```
+
+```{r}
+## Parameter grid
+trees <- c(50, 100, 250)
+tree_depth <- c(6, 9)
+min_n <- c(5, 15)
+learn_rate <- c(0.02, 0.04, 0.1)
+
+xgb_grid <- crossing(trees, tree_depth, min_n, learn_rate)
+```
+
+```{r}
+## Folds
+set.seed(2024)
+boosted_folds <- vfold_cv(train, strata = Target, v=4)
 ```
 
 
 ```{r}
-require(xgboost)
+#xgb_res <- tune_grid(
+#  xgb_wf,
+#  resamples = boosted_folds,
+#  grid = xgb_grid,
+#)
 ```
 
 ```{r}
-#library(caret)
-#set.seed(2024)
-#boostedIndex <- createDataPartition(sparse_matrix$Target, p=.8, list = FALSE, times = 1)
-#boosted_train <- sparse_matrix[boostedIndex,]
-#boosted_test <- sparse_matrix[-boostedIndex,]
+## Results
+#collect_metrics(xgb_res)
+```
+
+
+
+```{r}
+#show_best(xgb_res, metric = "accuracy")
 ```
 
