@@ -194,14 +194,16 @@ rf_mod <- randomForest(Target ~., train_student, ntree = 250, mtry = 5)
 imp_rf <- as.data.frame(importance(rf_mod))
 imp_rf$names <- rownames(imp_rf)
 rownames(imp_rf) <- NULL
+imp_rf <- imp_rf %>% arrange(desc(MeanDecreaseGini))
+imp_rf <- imp_rf[1:20,]
 ```
 
-```{r, echo=FALSE, message=FALSE, warning=FALSE}
+```{r, echo=FALSE, message=FALSE, warning=FALSE, fig.width=6.5, fig.height=3.8}
 library(ggplot2)
 ggplot(imp_rf, aes(y = reorder(names,MeanDecreaseGini), x = MeanDecreaseGini)) + geom_col() + theme_bw() + labs(x="Mean decrease in Gini coefficient", y="Variables") + ggtitle("Importance Plot from Random Forest")
 ```
 
-As can be seen, the variables relating to current academic standing and course enrolled in college are the most significant in assessing a student's chance of dropping out. Specifically, the average number of curricular credits approved per semester in the first year was the most predictive, followed by student's average grade in the first year and the course they enrolled (i.e., the major/concentration at the Portuguese institution). Other variables in the top 10 most important include father's and mother's occupation, whether the tuition fees were paid up to date, and admission grade. For reference, the cross-validated accuracy rate of this random forest is 77.48%, which is roughly equal to the reviewed literature's findings (all below 80%). That said, we are primarily concerned with the variable importance.
+As can be seen, the variables relating to current academic standing and course enrolled in college are the most significant in assessing a student's chance of dropping out. Specifically, the average number of curricular credits approved per semester in the first year was the most predictive, followed by student's average grade in the first year and the course they enrolled (i.e., the major/concentration at the Portuguese institution). Other variables in the top 10 most important include father's and mother's occupation, whether the tuition fees were paid up to date, and admission grade. For reference, the cross-validated accuracy rate of this random forest is 77.48%, which is roughly equal to the reviewed literature's findings, which ranges between 70% and 80%. That said, we are primarily concerned with the variable importance.
 
 ```{r, echo=FALSE, message=FALSE, warning=FALSE}
 ## Folds
@@ -227,11 +229,13 @@ mean(map_dbl(my_folds$splits, get_rf_accuracy))
 
 ```
 
-We then performed boosted trees using the `tidymodels` framework and `xgboost` engine. Boosted trees are another tree-based ensemble method but with learning feature. That is, each tree is built in the consideration of the previous tree's error. Introducing learning rate into the model has the potential to increase our accuracy rate significantly. Moreover, boosted trees can also give us information on the importance of predictors. Below is the importance plot of a boosting model with 250 trees, tree depth of 5 predictors, minimum node size of 10, and learning rate of 0.4 (our best parameters).
+We then performed boosted trees using the `tidymodels` framework and `xgboost` engine. Boosted trees are another tree-based ensemble method but with learning feature. That is, each tree is built in the consideration of the previous tree's error. Introducing learning rate into the model has the potential to increase our accuracy rate significantly. Moreover, boosted trees can also give us information on the importance of predictors. Below is the importance plot of a boosting model with 250 trees, a tree depth of 5, a minimum node size of 10 observations, and learning rate of 0.4, which are our best parameters. The plot was generated using the `vip` package, from a separate .Rmd file. Boosting algorithms are computationally intensive, so we used Grinnell's computer instead of the server.
 
 ![](VIP boosted.png)
 
-As shown above, 4 out of 5 most important predictors are academic data in the first year of college, with the average number of credits approved per semester stood out remarkably. There is a significant similarity between random forest and boosted trees in terms of the 10 best variables (7 matches out of 10). However, boosted trees enlisted whether the student's family was in debt (`Debtor`) and previous qualification grade as important. For reference, the cross-validated accuracy rate is 77.82%, which is minimally higher than that of our random forest model.
+Note that the measurement unit of variable importance is not mean decrease in Gini index, but rather the Shapley value due our code `vip()`.[^3] As shown above, 4 out of 5 most important predictors are academic data in the first year of college, with the average number of credits approved per semester stood out remarkably. There is a significant similarity between random forest and boosted trees in terms of the 10 best variables (7 matches out of 10). However, boosted trees enlisted whether the student's family was in debt (`Debtor`) and previous qualification grade as important. For reference, the cross-validated accuracy rate is 77.82%, which is minimally higher than that of our random forest model.
+
+[^3]: The Comprehensive R Archive Network, *vip: Variable Importance Plots*, https://cran.r-project.org/web/packages/vip/index.html
 
 # Discussion
 
@@ -264,4 +268,6 @@ Also, might want to replicate our findings at a different instituion.
 
 Beaulac, Cédric, and Jeffrey S. Rosenthal. “Predicting University Students’ Academic Success and Major Using Random Forests.” In *Research in Higher Education* 60, no. 7 (2019): 1048–64. https://doi.org/10.1007/s11162-019-09546-y. 
 
-Martins, Mónica V., Daniel Tolledo, Jorge Machado, Luís M. Baptista, and Valentim Realinho. “Early Prediction of Student’s Performance in Higher Education: A Case Study.” In *Trends and Applications in Information Systems and Technologies* 1 (2021): 166–75. https://doi.org/10.1007/978-3-030-72657-7_16. 
+Martins, Mónica V., Daniel Tolledo, Jorge Machado, Luís M. Baptista, and Valentim Realinho. “Early Prediction of Student’s Performance in Higher Education: A Case Study.” In *Trends and Applications in Information Systems and Technologies* 1 (2021): 166–75. https://doi.org/10.1007/978-3-030-72657-7_16.
+
+The Comprehensive R Archive Network. *vip: Variable Importance Plots* (n.d.). https://cran.r-project.org/web/packages/vip/index.html
