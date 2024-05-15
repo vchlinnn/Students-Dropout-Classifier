@@ -202,7 +202,7 @@ library(ggplot2)
 ggplot(imp_rf, aes(y = reorder(names,MeanDecreaseGini), x = MeanDecreaseGini)) + geom_col() + theme_bw() + labs(x="Mean decrease in Gini coefficient", y="Variables") + ggtitle("Importance Plot from Random Forest")
 ```
 
-As can be seen, the variables relating to current academic standing and course enrolled in college are the most significant in assessing a student's chance of dropping out. Specifically, the average number of curricular credits approved per semester in the first year was the most predictive, followed by student's average grade in the first year and the course (i.e., the major/concentration at the Portuguese institution). Other variables in the top 10 most important include father's and mother's occupation, whether the tuition fees were paid up to date, and admission grade. For reference, the accuracy rate of this random forest was 77.4%, which was roughly similar to the reviewed literature (all below 80%).
+As can be seen, the variables relating to current academic standing and course enrolled in college are the most significant in assessing a student's chance of dropping out. Specifically, the average number of curricular credits approved per semester in the first year was the most predictive, followed by student's average grade in the first year and the course they enrolled (i.e., the major/concentration at the Portuguese institution). Other variables in the top 10 most important include father's and mother's occupation, whether the tuition fees were paid up to date, and admission grade. For reference, the accuracy rate of this random forest is 77.4%, which is roughly equal to the reviewed literature's findings (all below 80%).
 
 ```{r, message=FALSE, warning=FALSE}
 library(yardstick)
@@ -211,9 +211,11 @@ rf_results <- data.frame(obs = test_student$Target,
 accuracy(rf_results, truth = obs, estimate = preds)
 ```
 
-We then performed boosted trees using the `tidymodels` framework and `xgboost` engine. Boosted trees are another tree-based ensemble method but with learning feature. That is, each tree is built in the consideration of the previous tree's error. Introducing learning rate into the model has the potential to increase our accuracy rate significantly. Moreover, boosted trees can also give us information on the importance of predictors.
+We then performed boosted trees using the `tidymodels` framework and `xgboost` engine. Boosted trees are another tree-based ensemble method but with learning feature. That is, each tree is built in the consideration of the previous tree's error. Introducing learning rate into the model has the potential to increase our accuracy rate significantly. Moreover, boosted trees can also give us information on the importance of predictors. Below is the importance plot of a boosting model with 250 trees, tree depth of 5 predictors, minimum node size of 10, and learning rate of 0.4 (our best parameters).
 
+![](VIP boosted.png)
 
+As shown above, 4 out of 5 most important predictors are academic data in the first year of college, with the average number of credits approved per semester stood out remarkably. There is a significant similarity between random forest and boosted trees in terms of the 10 best variables (7 matches out of 10). However, boosted trees enlisted whether the student's family was in debt (`Debtor`) and previous qualification grade as important. For reference, the cross-validated accuracy rate is 77.8%, which is minimally better than our random forest model.
 
 # Discussion
 
