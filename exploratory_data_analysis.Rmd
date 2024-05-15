@@ -396,8 +396,34 @@ train = training(my_split)
 test = testing(my_split)
 ```
 
+```{r}
+## Folds
+set.seed(2024)
+my_folds <- vfold_cv(train, strata = Target, v=4)
+```
 
 ### Random Forest
+
+```{r}
+library(randomForest)
+library(yardstick)
+get_rf_accuracy <- function(split){
+  my_train <- analysis(split)
+  my_test <- assessment(split)
+  set.seed(2024)
+  my_rf <- randomForest(Target ~., my_train, ntree = 250, mtry = 5)
+  my_results <- data.frame(obs = my_test$Target,
+                         preds = predict(my_rf, my_test))
+  my_acc <- accuracy(my_results, truth = obs, estimate = preds)
+  as.numeric(my_acc[1,3])
+}
+```
+
+```{r}
+library(purrr)
+mean(map_dbl(my_folds$splits, get_rf_accuracy))
+```
+
 
 ```{r}
 ## Build model
@@ -494,12 +520,6 @@ min_n <- c(5, 15)
 learn_rate <- c(0.02, 0.04, 0.1)
 
 xgb_grid <- crossing(trees, tree_depth, min_n, learn_rate)
-```
-
-```{r}
-## Folds
-set.seed(2024)
-boosted_folds <- vfold_cv(train, strata = Target, v=4)
 ```
 
 
