@@ -143,7 +143,7 @@ student_data$Target <- factor(student_data$Target)
 
 The transition from secondary to higher education often poses significant challenges for students, leading to academic difficulties and dropout. This phenomenon critically affects students' future prospects and institutions' reputations and financial stability. Our research investigates the factors influencing student outcomes in higher education, utilizing statistical learning methods to predict student outcomes based on variables such as demographic, socio-economic, and academic information. Specifically, we asked: “What factors are the most predictive of student graduate outcomes in higher education?”
 
-Previous studies primarily focus on predicting academic success using statistical methods. Beaulac and Roosenthal use random forests to predict whether students will complete their program based solely on course grades in college, with 78.84% accuracy.[^1] In addition, Martins et al., whose dataset we will use, achieved a higher accuracy rate for boosting algorithms than random forests, but were yet to incorporate student performance in their first semesters.[^2] Our research will take a step further by adding in early college performance predictors and significantly more observations into our analysis.
+Previous studies primarily focus on predicting academic success using statistical methods. Beaulac and Roosenthal use random forests to predict whether students will complete their program based solely on course grades in college, with 78.84% accuracy.[^1] In addition, Martins et al., whose dataset we will use, achieved a higher accuracy rate for boosting algorithms (73%) than random forests (72%), but were yet to incorporate student performance in their first semesters.[^2] Our research will take a step further by adding in early college performance predictors and significantly more observations into our analysis.
 
 [^1]: Cédric Beaulac and Jeffrey S. Rosenthal, "Predicting University Students’ Academic Success and Major Using Random Forests," in *Research in Higher Education* 60, no.7 (2019): 1048-64, doi.org/10.1007/s11162-019-09546-y.
 [^2]: Mónica V. Martins et al., "Early Prediction of student’s Performance in Higher Education: A Case Study," in *Trends and Applications in Information Systems and Technologies* 1 (2021): 166-75, doi.org/10.1007/978-3-030-72657-7_16.
@@ -242,12 +242,14 @@ Note that the measurement unit of variable importance is not mean decrease in Gi
 *A review of the results generated from the model and synthesis with the context from which the data was generated or observed, a restatement of research objective and an answer to the original research question, a discussion limitations of the study as well as areas for further research.*
 
 Objective: investigate the importance of predictors
---> Our research is an extension to Martins et al. (2021), where we confirm that the addition of initial college performance is crucial to identifying potential dropouts, based on the importance plot. In addition, our boosted trees accuracy at 77.82% is higher than the authors' boosting model without college performance (73%), further proving the usefulness of early performance.
+--> Our research is an extension to Martins et al. (2021), where we confirm that the addition of initial college performance is crucial to identifying potential dropouts, based on the importance plot. In addition, our boosted trees accuracy at roughly 78% is higher than the authors' boosting model without college performance (73%), further proving the usefulness of early performance.
 
 Contribution: we have identified those variables as highly predictive of student's chance of dropping out. We recommend early intervention accordingly.
 
 Limitations:
 Random forests and boosted trees are intensive models. We might not have found the best parameters for either of our models (i.e., our models might not be optimal).
+
+Another challenge is class imbalance, in which the number of records is widely disparate among the classes. This is often the case in our context because it is likely that the minority of students underperform and drop out. Class imbalance may lead to a higher error in identifying dropouts, which is contrary to our research' implication for early academic intervention.
 
 Future research:
 should look into more types of data about student's first year, not just about studies but perhaps social life.
