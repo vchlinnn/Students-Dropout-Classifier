@@ -188,7 +188,7 @@ plot2 <- ggplot(student_data, aes(x = Target, y = Curricular.units.all.year..app
   geom_boxplot() +
   labs(title = "Number of curricular units (approved) by Target", x = "Target", y = "Curricular units all year (approved)") +
   theme(
-    plot.title = element_text(size = 10),  
+    plot.title = element_text(size = 9),  
     axis.title = element_text(size = 8),   
     axis.text = element_text(size = 6)     
   )
