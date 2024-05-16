@@ -172,11 +172,10 @@ library(ggplot2)
 library(gridExtra)
 ```
 
-
 ```{r echo = F}
 # Define the plots
 plot1 <- ggplot(student_data, aes(x = Target, y = Curricular.units.all.year..grade., fill = Target)) + 
-  geom_boxplot() +
+  geom_boxplot() + theme_bw() +
   labs(title = "Number of curricular units (grade) by Target", x = "Target", y = "Curricular units all year (grade)") +
   theme(
     plot.title = element_text(size = 10),  
@@ -185,7 +184,7 @@ plot1 <- ggplot(student_data, aes(x = Target, y = Curricular.units.all.year..gra
   )
 
 plot2 <- ggplot(student_data, aes(x = Target, y = Curricular.units.all.year..approved., fill = Target)) + 
-  geom_boxplot() +
+  geom_boxplot() + theme_bw() +
   labs(title = "Number of curricular units (approved) by Target", x = "Target", y = "Curricular units all year (approved)") +
   theme(
     plot.title = element_text(size = 9),  
@@ -194,7 +193,7 @@ plot2 <- ggplot(student_data, aes(x = Target, y = Curricular.units.all.year..app
   )
 
 plot3 <- ggplot(student_data, aes(x = Debtor, fill = Target)) +
-  geom_bar(position = "dodge") +
+  geom_bar(position = "dodge") + 
   labs(x = "Debtor", y = "Count", title = "Debtor by Target Categories") +
   theme_minimal() +
   theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
@@ -202,10 +201,10 @@ plot3 <- ggplot(student_data, aes(x = Debtor, fill = Target)) +
     plot.title = element_text(size = 10),  
     axis.title = element_text(size = 8),   
     axis.text = element_text(size = 6)     
-  )
+  ) + theme_bw()
 
 plot4 <- ggplot(student_data, aes(x = Scholarship.holder, fill = Target)) +
-  geom_bar(position = "dodge") +
+  geom_bar(position = "dodge") + theme_bw() +
   labs(x = "Scholarship holder", y = "Count", title = "Scholarship holder by Target Categories") +
   theme_minimal() +
   theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
@@ -213,7 +212,7 @@ plot4 <- ggplot(student_data, aes(x = Scholarship.holder, fill = Target)) +
     plot.title = element_text(size = 10),  
     axis.title = element_text(size = 8),   
     axis.text = element_text(size = 6)     
-  )
+  ) + theme_bw()
 
 # Arrange the plots in a 2 x 2 grid
 grid.arrange(plot1, plot2, plot3, plot4, nrow = 2, ncol = 2)
