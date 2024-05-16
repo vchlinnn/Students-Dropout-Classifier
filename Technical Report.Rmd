@@ -1,8 +1,8 @@
 ---
-title: "Technical Report: Analyzing Factors Influencing Student Academic Success and Dropouts in Higher Education"
+title: "Analyzing Factors Influencing Student Academic Success and Dropouts in Higher Education"
 author: "Duc Nguyen and Linh Vu"
 output: pdf_document
-date: "2024-05-10"
+date: "2024-05-15"
 ---
 
 ```{r setup, include=FALSE}
@@ -141,9 +141,9 @@ student_data$Target <- factor(student_data$Target)
 
 # Introduction
 
-The transition from secondary to higher education often poses significant challenges for students, leading to academic difficulties and dropout. This phenomenon critically affects students' future prospects and institutions' reputations and financial stability. Our research investigates the factors influencing student outcomes in higher education, utilizing statistical learning methods to predict student outcomes based on variables such as demographic, socio-economic, and academic information. Specifically, we asked: “What factors are the most predictive of student graduate outcomes in higher education?”
+The transition from secondary to higher education often poses significant challenges for students, leading to academic difficulties and dropout. This phenomenon critically affects students' future prospects and institutions' reputations and financial stability. Our research investigates the factors influencing student outcomes in higher education, utilizing statistical learning methods to predict student outcomes based on variables such as demographic, socio-economic, and academic information. Our research question is: “What factors are the most predictive of student graduate outcomes in higher education?”
 
-Previous studies primarily focus on predicting academic success using statistical methods. Beaulac and Roosenthal use random forests to predict whether students will complete their program based solely on course grades in college, with 78.84% accuracy.[^1] In addition, Martins et al., whose dataset we will use, achieved a higher accuracy rate for boosting algorithms (73%) than random forests (72%), but were yet to incorporate student performance in their first semesters.[^2] Our research will take a step further by adding in early college performance predictors and significantly more observations into our analysis.
+Previous studies primarily focus on predicting academic success using statistical methods. Beaulac and Roosenthal used random forests to predict whether students will complete their program based solely on course grades in college, with 78.84% accuracy.[^1] In addition, Martins et al., whose dataset we will use, achieved a higher accuracy rate for boosting algorithms (73%) than random forests (72%), but were yet to incorporate student performance in their first semesters.[^2] Our research will take a step further by adding in early college performance predictors and significantly more observations into our analysis.
 
 [^1]: Cédric Beaulac and Jeffrey S. Rosenthal, "Predicting University Students’ Academic Success and Major Using Random Forests," in *Research in Higher Education* 60, no.7 (2019): 1048-64, doi.org/10.1007/s11162-019-09546-y.
 [^2]: Mónica V. Martins et al., "Early Prediction of student’s Performance in Higher Education: A Case Study," in *Trends and Applications in Information Systems and Technologies* 1 (2021): 166-75, doi.org/10.1007/978-3-030-72657-7_16.
@@ -152,25 +152,75 @@ Previous studies primarily focus on predicting academic success using statistica
 
 **Dataset Description**
 
-The dataset of this study was sourced from the UC Irvine Machine Learning Repository, containing records from the Polytechnic Institute of Portalegre, Portugal. The dataset spans the school years 2008-09 and 2018-19, consisting of 4424 student records across various undergraduate degrees. The data features 36 predictors and a categorical response variable indicating student outcomes: `dropout`, `enrolled`, and `graduate`.
-
+The dataset of this study was sourced from the UC Irvine Machine Learning Repository, containing records from the Polytechnic Institute of Portalegre, Portugal. The dataset spans the school years 2008-09 and 2018-19, consisting of 4424 student records across various undergraduate degrees. The data features 36 predictors and a categorical response variable with three levels of student outcomes: `dropout`, `enrolled`, and `graduate`.
 
 **Data Processing**
 
-The data was loaded into RStudio using UCI's URL. Initial data wrangling involved checking for missing values (none found) and recoding categorical variables from numerical to factor types. Further modifications included collapsing the levels of complex categorical variables like parental qualifications and occupations into more general categories for analytical and modeling purposes.
+The data was loaded into RStudio using UCI's URL. Initial data wrangling involved checking for missing values (none found) and recoding categorical variables from numerical to factor types. Further modifications included renaming variables and collapsing the levels of complex categorical variables like parental qualifications and occupations into more general categories for analytical and modeling purposes.
 
 
 # Exploratory Data Analysis
 
-**Summary Statistics and Data Visualizations**
+To address the research question of which factors most effectively predict student graduation outcomes in higher education, we aim to investigate the relationship between each potentially significant predictor and our response variable. Thus, the goal of this exploratory data analysis is to familiarize ourselves with the data by visualizing how our different variables interact, potentially forming assumptions about the most predictive features of students' higher education outcomes.
 
-Key variables were selected based on their potential influence on student outcomes, focusing on factors like parental background, previous academic achievements, and early college performance. Data visualizations included histograms to explore distributions and boxplots to examine relationships between predictors and student outcomes. A correlation analysis was performed to check for multicollinearity, ultimately leading to the combination of variables on early college performance, from semesterly into yearly, in order to reduce redundancy and enhance model interpretability.
+During this phase, we utilized both visual and statistical methods. For quantitative predictors, we applied various techniques such as computing five-number summaries and examining histograms to identify possible skewness. To check for multicollinearity, we conducted a correlation analysis, which ultimately led to the combination of early college performance metrics from semester-based to yearly, reducing redundancy and enhancing the model's interpretability.
+
+For qualitative predictors, we visualized data to assess the relevance between these variables and the response variable, focusing on elements likely to impact student outcomes such as parental background, prior academic achievements, and initial college performance. Below are some noteworthy graphs of selected predictors whose association with students' outcomes is strong.
+
+```{r, include=FALSE}
+library(ggplot2)
+library(gridExtra)
+```
 
 
-**Statistical Methods and Model Diagnostics**
+```{r echo = F}
+# Define the plots
+plot1 <- ggplot(student_data, aes(x = Target, y = Curricular.units.all.year..grade., fill = Target)) + 
+  geom_boxplot() +
+  labs(title = "Number of curricular units (grade) by Target", x = "Target", y = "Curricular units all year (grade)") +
+  theme(
+    plot.title = element_text(size = 10),  
+    axis.title = element_text(size = 8),   
+    axis.text = element_text(size = 6)     
+  )
 
-The exploratory analysis utilized forward selection to identify significant predictors. This phase included testing potential variables against the response variable using both visual and statistical methods to ensure only the most relevant predictors were retained. Selected variables were then used to construct a baseline model, planning to employ tree-based classification methods for their robustness in handling non-linear relationships and interactions among predictors.
+plot2 <- ggplot(student_data, aes(x = Target, y = Curricular.units.all.year..approved., fill = Target)) + 
+  geom_boxplot() +
+  labs(title = "Number of curricular units (approved) by Target", x = "Target", y = "Curricular units all year (approved)") +
+  theme(
+    plot.title = element_text(size = 10),  
+    axis.title = element_text(size = 8),   
+    axis.text = element_text(size = 6)     
+  )
 
+plot3 <- ggplot(student_data, aes(x = Debtor, fill = Target)) +
+  geom_bar(position = "dodge") +
+  labs(x = "Debtor", y = "Count", title = "Debtor by Target Categories") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  theme(
+    plot.title = element_text(size = 10),  
+    axis.title = element_text(size = 8),   
+    axis.text = element_text(size = 6)     
+  )
+
+plot4 <- ggplot(student_data, aes(x = Scholarship.holder, fill = Target)) +
+  geom_bar(position = "dodge") +
+  labs(x = "Scholarship holder", y = "Count", title = "Scholarship holder by Target Categories") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  theme(
+    plot.title = element_text(size = 10),  
+    axis.title = element_text(size = 8),   
+    axis.text = element_text(size = 6)     
+  )
+
+# Arrange the plots in a 2 x 2 grid
+grid.arrange(plot1, plot2, plot3, plot4, nrow = 2, ncol = 2)
+```
+
+
+Through detailed analysis of each potential predictor and students' outcomes, we have developed strong confidence that there may be very strong predictors among our features. We then continue with model building to more accurately identify those.
 
 # Results
 
@@ -239,21 +289,23 @@ Note that the measurement unit of variable importance is not mean decrease in Gi
 
 # Discussion
 
-*A review of the results generated from the model and synthesis with the context from which the data was generated or observed, a restatement of research objective and an answer to the original research question, a discussion limitations of the study as well as areas for further research.*
+**Conclusion**
 
-Objective: investigate the importance of predictors
---> Our research is an extension to Martins et al. (2021), where we confirm that the addition of initial college performance is crucial to identifying potential dropouts, based on the importance plot. In addition, our boosted trees accuracy at roughly 78% is higher than the authors' boosting model without college performance (73%), further proving the usefulness of early performance.
+Our research aimed to identify the most predictive indicators of college dropouts and has successfully highlighted metrics of first-year performance, such as the number of curricular units approved, enrolled, grades, and evaluations. Additionally, factors like tuition fees payment status and age at enrollment also play a role. Notably, the average number of credits approved per semester had a substantially higher predictive value compared to other factors, indicating its crucial role in predicting potential dropouts.
 
-Contribution: we have identified those variables as highly predictive of student's chance of dropping out. We recommend early intervention accordingly.
+Our findings significantly build upon Martins et al. (2021), confirming that incorporating metrics of first-year college performance is crucial in identifying potential dropouts, as evidenced by the importance plot. Moreover, the accuracy of our boosted tree models, approximately 78%, surpasses the 73% achieved by the authors' models that did not include first-year performance, further proving the predictive power of early performance metrics in higher education.
 
-Limitations:
-Random forests and boosted trees are intensive models. We might not have found the best parameters for either of our models (i.e., our models might not be optimal).
+**Limitations**
 
-Another challenge is class imbalance, in which the number of records is widely disparate among the classes. This is often the case in our context because it is likely that the minority of students underperform and drop out. Class imbalance may lead to a higher error in identifying dropouts, which is contrary to our research' implication for early academic intervention.
+Random forests and boosted trees are computationally intensive models, requiring significant resources and time. Additionally, our models may not be optimized fully due to potentially non-optimal parameter settings.
 
-Future research:
-should look into more types of data about student's first year, not just about studies but perhaps social life.
-Also, might want to replicate our findings at a different instituion.
+Our study is also limited to the data from the Polytechnic Institute of Portalegre, Portugal, which may include confounding variables that affect its generalizability to broader higher education contexts.
+
+Another challenge is class imbalance for the response variable, in which the number of records is widely disparate among the classes. This is often the case in our context because it is likely that the minority of students underperform and drop out. Class imbalance may lead to a higher error in identifying dropouts, which is contrary to our research' implication for early academic intervention.
+
+**Areas for Further Research**
+
+Future research should explore more comprehensive data about students' first year, including aspects of their social life, to gain a fuller understanding of dropout predictors. Additionally, replicating this study at different institutions could help verify our findings and enhance the representativeness of the sample, ensuring broader applicability of the results.
 
 \newpage
 
