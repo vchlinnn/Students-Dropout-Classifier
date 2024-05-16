@@ -302,9 +302,12 @@ Our study is also limited to the data from the Polytechnic Institute of Portaleg
 
 Another challenge is class imbalance for the response variable, in which the number of records is widely disparate among the classes. This is often the case in our context because it is likely that the minority of students underperform and drop out. Class imbalance may lead to a higher error in identifying dropouts, which is contrary to our research' implication for early academic intervention.
 
+Lastly, the use of ensemble methods prevent thorough understanding of how the models actually predict the graduate outcomes. That is, we could only know the variables that are important, but did not have a benchmark against which we identify students with high potential of dropping out. This limitation of reduced interpretability is inherent in the ensemble models.
+
+
 **Areas for Further Research**
 
-Future research should explore more comprehensive data about students' first year, including aspects of their social life, to gain a fuller understanding of dropout predictors. Additionally, replicating this study at different institutions could help verify our findings and enhance the representativeness of the sample, ensuring broader applicability of the results.
+Future research should explore more comprehensive data about students' first year, including aspects of their social life, to gain a fuller understanding of dropout predictors. We suspect non-academic features may be useful in determining students' success. Additionally, replicating this study at different institutions could help verify our findings and enhance the representativeness of the sample, ensuring broader applicability of the results. Finally, we suggest educators to formalize our findings into proper procedure to identify students with moderate to high probability of dropping out. However, educators should be aware of the adverse effects of miscategorization and how the stigma of being academically low-performing works in tandem with self-fulfilling prophecy to worsen students' actual performance.
 
 \newpage
 
