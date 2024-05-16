@@ -2,7 +2,7 @@
 title: "Analyzing Factors Influencing Student Academic Success and Dropouts in Higher Education"
 author: "Duc Nguyen and Linh Vu"
 output: pdf_document
-date: "2024-05-15"
+date: "2024-05-17"
 ---
 \newpage
 
@@ -276,7 +276,6 @@ get_rf_accuracy <- function(split){
 ## Mapping
 library(purrr)
 mean(map_dbl(my_folds$splits, get_rf_accuracy))
-
 ```
 
 We then performed boosted trees using the `tidymodels` framework and `xgboost` engine. Boosted trees are another tree-based ensemble method but with learning feature. That is, each tree is built in the consideration of the previous tree's error. Introducing learning rate into the model has the potential to increase our accuracy rate significantly. Moreover, boosted trees can also give us information on the importance of predictors. Below is the importance plot of a boosting model with 250 trees, a tree depth of 5, a minimum node size of 10 observations, and learning rate of 0.4, which are our best parameters. The plot was generated using the `vip` package, from a separate .Rmd file. Boosting algorithms are computationally intensive, so we used Grinnell's computer instead of the server.
@@ -488,6 +487,116 @@ plot4 <- ggplot(student_data, aes(x = Scholarship.holder, fill = Target)) +
 
 ## Arrange the plots in a 2 x 2 grid
 grid.arrange(plot1, plot2, plot3, plot4, nrow = 2, ncol = 2)
+```
+
+## Random forest
+
+```{r, eval=FALSE, echo=TRUE}
+## Folds
+set.seed(2024)
+my_folds <- vfold_cv(student_data, strata = Target, v=5)
+
+## Create new function
+library(yardstick)
+get_rf_accuracy <- function(split){
+  my_train <- analysis(split)
+  my_test <- assessment(split)
+  set.seed(2024)
+  my_rf <- randomForest(Target ~., my_train, ntree = 250, mtry = 5)
+  my_results <- data.frame(obs = my_test$Target,
+                         preds = predict(my_rf, my_test))
+  my_acc <- accuracy(my_results, truth = obs, estimate = preds)
+  as.numeric(my_acc[1,3])
+}
+
+## Cross-validated accuracy
+library(purrr)
+mean(map_dbl(my_folds$splits, get_rf_accuracy))
+```
+
+```{r, eval=FALSE, echo=TRUE}
+## Build model
+library(randomForest)
+set.seed(2024)
+rf_mod <- randomForest(Target ~., train_student, ntree = 250, mtry = 5)
+
+## Importance Plot
+imp_rf <- as.data.frame(importance(rf_mod))
+imp_rf$names <- rownames(imp_rf)
+rownames(imp_rf) <- NULL
+imp_rf <- imp_rf %>% arrange(desc(MeanDecreaseGini))
+imp_rf <- imp_rf[1:20,]
+
+ggplot(imp_rf, aes(y = reorder(names,MeanDecreaseGini), x = MeanDecreaseGini)) + geom_col() + theme_bw() + labs(x="Mean decrease in Gini coefficient", y="Variables") + ggtitle("Importance Plot from Random Forest")
+```
+
+
+## Boosted trees
+
+The code is excerpted from XGBoost.Rmd, which is the file we ran in DASIL.
+
+```{r, eval=FALSE, echo=TRUE}
+library(tidymodels)
+
+## Recipe
+student_rec <- recipe(Target ~., data = train) %>% 
+  step_novel(all_nominal()) %>% 
+  step_dummy(all_nominal(), - all_outcomes())
+
+## Model
+boosted_mod <- boost_tree(
+  trees = tune(),
+  tree_depth = tune(), 
+  min_n = tune(),
+  learn_rate = tune()
+) %>% 
+  set_engine("xgboost") %>% 
+  set_mode("classification")
+
+## Build workflow  
+xgb_wf <- workflow() %>% 
+  add_model(boosted_mod) %>% 
+  add_recipe(student_rec)
+
+## Parameter grid
+trees <- c(50, 100, 250)
+tree_depth <- c(3, 5, 7)
+min_n <- c(10)
+learn_rate <- c(0.02, 0.04, 0.1)
+
+xgb_grid <- crossing(trees, tree_depth, min_n, learn_rate)
+
+## Folds
+set.seed(2024)
+boosted_folds <- vfold_cv(train, strata = Target, v = 4)
+```
+
+```{r, eval=FALSE, echo=TRUE}
+## Run the model
+require(xgboost)
+my_time <- system.time(
+xgb_res <- tune_grid(
+  xgb_wf,
+  resamples = boosted_folds,
+  grid = xgb_grid,
+))
+
+## Best parameters
+best_accuracy <- select_best(xgb_res, metric = "accuracy")
+final_xgb <- finalize_workflow(xgb_wf, best_accuracy)
+
+## Get accuracy
+final_res_accuracy <- last_fit(final_xgb, my_split)
+collect_metrics(final_res_accuracy)
+```
+
+```{r, eval=FALSE, echo=TRUE}
+## Generate Importance Plot
+library(vip)
+final_xgb %>%
+  fit(data = train) %>%
+  pull_workflow_fit() %>%
+  vip(num_features = 20, geom = "col") + theme_bw() + labs(title = "Importance Plot from Boosted Trees", x="Variables")
 ```
 
 
